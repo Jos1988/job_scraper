@@ -62,8 +62,6 @@ for batch in batches:
                 attempts += 1
                 if verbosity > 1:
                     print(f'Json decode failure, skipping id: {id}.')
-                if attempts == 3:
-                    failed_uploads += 1
                 loader.update_skip_file(id)
                 continue
 
