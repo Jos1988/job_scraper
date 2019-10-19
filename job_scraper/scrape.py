@@ -21,9 +21,8 @@ verbosity = args.verbosity
 delay_time = args.delay
 limit = args.limit
 
-TARGET = ''
 CRAWL_URL = 'https://job-openings.monster.com/v2/job/pure-json-view?jobid={id}'
-API_ENDPOINT = f"http://{TARGET}/api/jobs"
+API_ENDPOINT = "http://178.62.214.138/api/jobs"
 QUEUE_FILE = 'job_scraper/data/queue.csv'
 PROCESSED_DIR = 'job_scraper/data/processed'
 SKIP_FILE = 'job_scraper/data/skipped.csv'
@@ -60,8 +59,11 @@ for batch in batches:
                 if attempts == 3:
                     failed_uploads += 1
             except json.decoder.JSONDecodeError:
+                attempts += 1
                 if verbosity > 1:
                     print(f'Json decode failure, skipping id: {id}.')
+                if attempts == 3:
+                    failed_uploads += 1
                 loader.update_skip_file(id)
                 continue
 
