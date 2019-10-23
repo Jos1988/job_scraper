@@ -4,6 +4,7 @@ from job_scraper.crawler import Crawler
 from job_scraper.data_saver import Saver
 from job_scraper.id_loader import IdLoader
 from job_scraper.response_mapping import ResponseMapper
+import job_scraper.config as conf
 import requests
 import time
 import argparse
@@ -21,21 +22,16 @@ verbosity = args.verbosity
 delay_time = args.delay
 limit = args.limit
 
-CRAWL_URL = 'https://job-openings.monster.com/v2/job/pure-json-view?jobid={id}'
-API_ENDPOINT = "http://178.62.214.138/api/jobs"
-QUEUE_FILE = 'job_scraper/data/queue.csv'
-PROCESSED_DIR = 'job_scraper/data/processed'
-SKIP_FILE = 'job_scraper/data/skipped.csv'
 max_attempts_link = 3
 max_failed_links = 5
 sleep_time = 3600
 
-loader = IdLoader(processed_dir=PROCESSED_DIR, queue_file=QUEUE_FILE, skip_file=SKIP_FILE, verbosity=verbosity)
-crawler = Crawler(url_format=CRAWL_URL)
-data_saver = Saver(API_ENDPOINT, verbosity)
+loader = IdLoader(processed_dir=conf.PROCESSED_DIR, queue_file=conf.QUEUE_FILE, skip_file=conf.SKIP_FILE,
+                  verbosity=verbosity)
+crawler = Crawler(url_format=conf.CRAWL_URL)
+data_saver = Saver(conf.API_ENDPOINT, verbosity)
 
 batches = loader.load_batches_from_queue(batch_size=batch_size, limit=limit)
-# batches = []
 for batch in batches:
     failed_uploads = 0
     for id in batch:
@@ -62,6 +58,8 @@ for batch in batches:
                 attempts += 1
                 if verbosity > 1:
                     print(f'Json decode failure, skipping id: {id}.')
+                if attempts == 3:
+                    failed_uploads += 1
                 loader.update_skip_file(id)
                 continue
 

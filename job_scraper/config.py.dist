@@ -1,0 +1,5 @@
+CRAWL_URL = 'https://job-openings.monster.com/v2/job/pure-json-view?jobid={id}'
+API_ENDPOINT = "http://[ip]/api/jobs"
+QUEUE_FILE = 'job_scraper/data/queue_2_from_db_server.csv'
+PROCESSED_DIR = 'job_scraper/data/processed'
+SKIP_FILE = 'job_scraper/data/skipped.csv'
